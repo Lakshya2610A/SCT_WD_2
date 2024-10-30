@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch Web Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+
+    <div class="max-w-md p-6 bg-gray-800 rounded-lg shadow-lg">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold">TASK 02</h1>
+            <h2 class="text-xl font-semibold mt-4">STOPWATCH WEB APPLICATION</h2>
+        </div>
+
+        <div id="display" class="text-3xl font-mono text-center py-4">
+            00:00:00
+        </div>
+
+        <div class="flex justify-center gap-3 mt-4">
+            <button id="startPauseButton" onclick="toggleStopwatch()" class="px-5 py-2 bg-green-600 hover:bg-green-700 rounded-xl">
+                Start
+            </button>
+            <button onclick="lapStopwatch()" class="px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl">Lap</button>
+            <button onclick="resetStopwatch()" class="px-5 py-2 bg-red-600 hover:bg-red-700 rounded-xl">Reset</button>
+        </div>
+
+        <div id="laps" class="mt-6 text-gray-300 text-sm">
+            <!-- time laps will be added here-->
+        </div>
+    </div>
+
+    <script>
+        let [hours, minutes, seconds] = [0, 0, 0];
+        let timer = null;
+        let lapCount = 0;
+
+        function updateDisplay() {
+            const display = document.getElementById("display");
+            display.textContent = 
+                `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+        }
+
+        function toggleStopwatch() {
+            const button = document.getElementById("startPauseButton");
+
+            if (timer === null) {
+                startStopwatch();
+                button.textContent = "Pause";
+                button.classList.remove("bg-green-600");
+                button.classList.add("bg-yellow-600");
+            } else {
+                pauseStopwatch();
+                button.textContent = "Start"; 
+                button.classList.remove("bg-yellow-600");
+                button.classList.add("bg-green-600"); 
+            }
+        }
+
+        function startStopwatch() {
+            if (timer === null) {
+                timer = setInterval(() => {
+                    seconds++;
+                    if (seconds === 60) {
+                        seconds = 0;
+                        minutes++;
+                        if (minutes === 60) {
+                            minutes = 0;
+                            hours++;
+                        }
+                    }
+                    updateDisplay();
+                }, 1000);
+            }
+        }
+
+        function pauseStopwatch() {
+            clearInterval(timer);
+            timer = null;
+        }
+
+        function lapStopwatch() {
+            if (timer !== null) {
+                lapCount++;
+                const lapTime = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+                const lapContainer = document.getElementById("laps");
+
+                const lapElement = document.createElement("div");
+                lapElement.className = "flex justify-between items-center bg-gray-700 p-2 rounded-md mb-1";
+                lapElement.innerHTML = `
+                    <span>Lap ${lapCount}:</span>
+                    <span>${lapTime}</span>
+                `;
+                
+                lapContainer.appendChild(lapElement);
+            }
+        }
+
+        function resetStopwatch() {
+            clearInterval(timer);
+            timer = null;
+            [hours, minutes, seconds] = [0, 0, 0];
+            lapCount = 0;
+            updateDisplay();
+            document.getElementById("laps").innerHTML = ""; 
+            document.getElementById("startPauseButton").textContent = "Start"; 
+            document.getElementById("startPauseButton").classList.remove("bg-yellow-600"); 
+            document.getElementById("startPauseButton").classList.add("bg-green-600"); 
+        }
+    </script>
+</body>
+</html>
